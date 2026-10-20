@@ -7,6 +7,7 @@ StreamProcessor::StreamProcessor(uint16_t size, void *handle)
 {
     payload_size_ = size;
     payload_ = new uint8_t[payload_size_];
+    memset(payload_, 0, payload_size_);
 
     handle_ = handle;
     OutCallback = nullptr;
@@ -74,14 +75,14 @@ StreamProcessor &StreamProcessor::operator=(const StreamProcessor &obj)
     return *this;
 }
 
-void StreamProcessor::RegisterStreamOutCallback(stream_out_callback_t pCallback)
+void StreamProcessor::RegisterStreamOutCallback(stream_out_callback_t callback)
 {
-    OutCallback = pCallback;
+    OutCallback = callback;
 }
 
-void StreamProcessor::RegisterStreamRunCallback(stream_run_callback_t pCallback)
+void StreamProcessor::RegisterStreamRunCallback(stream_run_callback_t callback)
 {
-    RunCallback = pCallback;
+    RunCallback = callback;
 }
 
 #if ENABLE_OS_SUPPORT

@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2025 STMicroelectronics.
+  * Copyright (c) 2026 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -26,8 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "drv_RF24L01.h"
-#include "sys.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,9 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint8_t as01_state = 0;
-const uint8_t data[100] = {0};
-uint8_t freq = 50;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,20 +95,9 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-    drv_spi_init();
-    as01_state = NRF24L01_check();
-    RF24L01_Init();
-    
-    RF24LL01_Write_Hopping_Point(freq);
-    delay_ms(100);
-    RF24LL01_Write_Hopping_Point(freq);
-//    RF24L01_Set_Mode(MODE_TX);
-//    NRF24L01_Set_Speed(SPEED_2M);
-//    NRF24L01_Set_Power(POWER_0DBM);
-    //NRF24L01_Write_Tx_Payload_NoAck((uint8_t *)data, 1);
-//    delay_ms(100);
-    //NRF24L01_Reuse_Tx_Payload();
+  MainTask();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -120,10 +107,6 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      LED1_OUTPUT(1);
-      delay_ms(200);
-      LED1_OUTPUT(0);
-      delay_ms(200);
   }
   /* USER CODE END 3 */
 }
@@ -172,6 +155,28 @@ void SystemClock_Config(void)
 /* USER CODE END 4 */
 
 /**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM4 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM4)
+  {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
+
+/**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
@@ -185,8 +190,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

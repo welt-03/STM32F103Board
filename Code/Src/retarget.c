@@ -9,7 +9,7 @@ __asm(".global __use_no_semihosting\n\t"); // ARM Compiler 6
 
 void _ttywrch(int ch)
 {
-    ch = ch;
+    (void)ch;
 }
 
 void _sys_exit(int return_code)

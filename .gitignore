@@ -1,0 +1,12 @@
+.dide
+.idea
+.vscode
+build
+mx.scratch
+!.settings
+cmake-build-debug
+.mxproject
+vcpkg-configuration.json
+out
+MDK-ARM
+!MDK-ARM/.clangd

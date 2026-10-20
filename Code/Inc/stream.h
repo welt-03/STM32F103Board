@@ -15,7 +15,8 @@
 /**
  * @brief 流输出回调函数
  * @note  无操作系统下将以阻塞的形式将流输出 阻塞时间 @ref DEFAULT_STREAM_OUTPUT_TIMEOUT_TIME
- * @param pCallback
+ * @param data
+ * @param size
  * @param handle -用户自定义参数句柄
  */
 typedef void (*stream_out_callback_t)(uint8_t *data, uint16_t size, void *handle);
@@ -49,8 +50,8 @@ class StreamProcessor
 
     void RegisterStreamOutCallback(stream_out_callback_t callback);
     void RegisterStreamRunCallback(stream_run_callback_t callback);
-    void SetHandle(void *handle);
-    void GetHandle();
+    void SetHandle(void *handle) { handle_ = handle; }
+    [[nodiscard]] void* GetHandle() const { return handle_; }
     void Run();
     void Print(const char *fmt, ...);
     void Print(uint8_t *data, uint16_t size);
@@ -64,9 +65,9 @@ class StreamProcessor
 #endif
 
   private:
-    char buffer_[DEFAULT_STREAM_BUFF_SIZE];
-    void *handle_;
     uint16_t payload_size_;
+    void *handle_;
+    char buffer_[DEFAULT_STREAM_BUFF_SIZE];
     stream_out_callback_t OutCallback;
     stream_run_callback_t RunCallback;
 
