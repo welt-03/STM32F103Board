@@ -1,0 +1,18 @@
+CompileFlags:
+  CompilationDatabase: e:\crysd\Desktop\Project\STM32\STM32F103Board\MDK-ARM\out\STM32F103Board\STM32F103Board
+
+---
+If:
+  PathMatch: .*\.(c|C|h)$
+CompileFlags:
+  Add:
+    - -include
+    - e:\crysd\Desktop\Project\STM32\STM32F103Board\MDK-ARM\out\STM32F103Board\STM32F103Board\compile_macros_c.h
+
+---
+If:
+  PathMatch: .*\.(cpp|c\+\+|C\+\+|cxx|cc|CC|hpp)$
+CompileFlags:
+  Add:
+    - -include
+    - e:\crysd\Desktop\Project\STM32\STM32F103Board\MDK-ARM\out\STM32F103Board\STM32F103Board\compile_macros_cxx.h

@@ -102,14 +102,8 @@ void u8g2Init(u8g2_t *u8g2)
 	u8g2_Setup_ssd1306_i2c_128x64_noname_f(u8g2, U8G2_R0, u8x8_byte_hw_i2c, u8x8_gpio_and_delay); // 初始化u8g2 结构体
 	u8g2_InitDisplay(u8g2);                                                                       //
 	u8g2_SetPowerSave(u8g2, 0);                                                                   //
-	u8g2_ClearBuffer(u8g2);
-
-    delay_ms(1000);
-    u8g2_DrawBox(u8g2, 0, 0, 20, 20);
     u8g2_SetFont(u8g2, u8g2_font_6x12_t_cyrillic);
-    u8g2_DrawStr(u8g2, 30, 10, "hello world.");
-    u8g2_DrawArc(u8g2, 64, 32, 20, 10, 10);
-    u8g2_SendBuffer(u8g2);
+	u8g2_ClearBuffer(u8g2);
 }
 
 

@@ -8,6 +8,7 @@
 #include "stream.h"
 #include "stm32_u8g2.h"
 
+#define TIME_INTERVAL ((1000) - 1)
 
 static u8g2_t oled;
 static StreamProcessor Serial(&huart1);
@@ -20,6 +21,9 @@ void MainTask(void)
 {
     u8g2Init(&oled);
 
+    uint32_t now_time;
+    static uint32_t timer = HAL_GetTick() + TIME_INTERVAL;
+
     Serial.RegisterStreamOutCallback(StreamOutCallback);
     Serial.RegisterStreamRunCallback(SerialRunCallback);
     HAL_UARTEx_ReceiveToIdle_DMA((UART_HandleTypeDef *)Serial.GetHandle(), Serial.payload_, DEFAULT_STREAM_PAYLOAD_SIZE);
@@ -27,10 +31,14 @@ void MainTask(void)
     for (;;)
     {
         Serial.Run();
-        LED1_OUTPUT(1);
-        delay_ms(200);
-        LED1_OUTPUT(0);
-        delay_ms(200);
+        now_time = HAL_GetTick();
+        if (now_time > timer)
+        {
+            timer = now_time + TIME_INTERVAL;
+            LED1_OUTPUT(1);
+            delay_ms(200);
+            LED1_OUTPUT(0);
+        }
     }
 }
 
@@ -41,8 +49,11 @@ void StreamOutCallback(uint8_t *data, uint16_t size, void *handle)
 
 void SerialRunCallback(void *handle)
 {
+    HAL_GPIO_TogglePin(LED2_GPIO_Port, LED2_Pin);
     Serial.Print(Serial.payload_, Serial.size_);
     HAL_UARTEx_ReceiveToIdle_DMA((UART_HandleTypeDef *)handle, Serial.payload_, DEFAULT_STREAM_PAYLOAD_SIZE);
+    u8g2_DrawStr(&oled, 0, 10, (char *)Serial.payload_);
+    u8g2_SendBuffer(&oled);
 }
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
@@ -59,6 +70,11 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
     {
         Serial.SendComplete();
     }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    HAL_UARTEx_ReceiveToIdle_DMA(huart, Serial.payload_, DEFAULT_STREAM_PAYLOAD_SIZE);
 }
 
 // void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)

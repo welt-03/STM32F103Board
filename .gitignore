@@ -1,12 +1,13 @@
 .dide
 .idea
 .vscode
+.settings
 build
 mx.scratch
-!.settings
 cmake-build-debug
 .mxproject
 vcpkg-configuration.json
 out
-MDK-ARM
+MDK-ARM/*
 !MDK-ARM/.clangd
+!MDK-ARM/STM32F103Board.cproject.yml
